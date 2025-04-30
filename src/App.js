@@ -1,4 +1,4 @@
-import WorkoutRoutine from "./components/workoutPlans/WorkoutRoutine"
+import WorkoutRoutine from "./components/WorkoutRoutine/WorkoutRoutine"
 
 function App() {
   return (
