@@ -7,7 +7,7 @@ export const workoutPlans = {
       reps: [10, 10, 10],
       rest: 30,
       category: "Upper Body",
-      image: "/api/placeholder/150/150"
+      image: "/assets/wallpushup.png"
     },
     {
       name: "Bodyweight Squats",
@@ -16,7 +16,7 @@ export const workoutPlans = {
       reps: [10, 10, 10],
       rest: 30,
       category: "Lower Body",
-      image: "/api/placeholder/150/150"
+      image: "/assets/bodyweightsquats.png"
     },
     {
       name: "Glute Bridges",
@@ -25,7 +25,7 @@ export const workoutPlans = {
       reps: [10, 10, 10],
       rest: 30,
       category: "Core",
-      image: "/api/placeholder/150/150"
+      image: "/assets/glute.webp"
     },
     {
       name: "Plank (on knees)",
@@ -34,7 +34,7 @@ export const workoutPlans = {
       reps: [20, 20, 20], // in seconds
       rest: 30,
       category: "Core",
-      image: "/api/placeholder/150/150"
+      image: "/assets/plank.webp"
     }
   ],
   intermediate: [
@@ -45,7 +45,7 @@ export const workoutPlans = {
       reps: [12, 12, 12],
       rest: 45,
       category: "Upper Body",
-      image: "/api/placeholder/150/150"
+      image: "/assets/regularPushUps.webp"
     },
     {
       name: "Bulgarian Split Squats",
@@ -53,7 +53,7 @@ export const workoutPlans = {
       reps: [8, 8, 8],
       rest: 45,
       category: "Lower Body",
-      image: "/api/placeholder/150/150"
+      image: "/assets/splitSquats.webp"
     },
     {
       name: "Mountain Climbers",
@@ -62,7 +62,7 @@ export const workoutPlans = {
       reps: [20, 20, 20],
       rest: 45,
       category: "Cardio",
-      image: "/api/placeholder/150/150"
+      image: "/assets/mountainClimbers.webp"
     },
     {
       name: "Full Plank",
@@ -71,7 +71,7 @@ export const workoutPlans = {
       reps: [30, 30, 30], // in seconds
       rest: 45,
       category: "Core",
-      image: "/api/placeholder/150/150"
+      image: "/assets/fullPlank.webp"
     }
   ],
   advanced: [
@@ -82,7 +82,7 @@ export const workoutPlans = {
       reps: [15, 15, 15],
       rest: 60,
       category: "Upper Body",
-      image: "/api/placeholder/150/150"
+      image: "/assets/diamondPushUps.webp"
     },
     {
       name: "Pistol Squats",
@@ -91,7 +91,7 @@ export const workoutPlans = {
       reps: [8, 8, 8],
       rest: 60,
       category: "Lower Body",
-      image: "/api/placeholder/150/150"
+      image: "/assets/pistolSquats.webp"
     },
     {
       name: "Burpees",
@@ -100,7 +100,7 @@ export const workoutPlans = {
       reps: [15, 15, 15],
       rest: 60,
       category: "Full Body",
-      image: "/api/placeholder/150/150"
+      image: "/assets/burpees.webp"
     },
     {
       name: "Side Plank Rotations",
@@ -109,7 +109,7 @@ export const workoutPlans = {
       reps: [10, 10, 10], // per side
       rest: 60,
       category: "Core",
-      image: "/api/placeholder/150/150"
+      image: "/assets/sidePlank.webp"
     }
   ]
 }

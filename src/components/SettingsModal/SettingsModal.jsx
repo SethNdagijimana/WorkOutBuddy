@@ -7,12 +7,50 @@ const SettingsModal = ({
   setCustomRestTime,
   volume,
   setVolume,
+  soundType,
+  setSoundType,
   countdownEnabled,
   setCountdownEnabled,
   onClose,
   onApply,
   workoutPlans
 }) => {
+  // Sound options for selection
+  const soundOptions = [
+    { value: "beep", label: "Beep" },
+    { value: "bell", label: "Bell" },
+    { value: "chime", label: "Chime" }
+  ]
+
+  // Function to test the selected sound
+  const testSound = () => {
+    try {
+      const audio = new Audio()
+      // Set the source based on sound type
+      switch (soundType) {
+        case "beep":
+          audio.src =
+            "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"
+          break
+        case "bell":
+          audio.src =
+            "https://assets.mixkit.co/active_storage/sfx/209/209-preview.mp3"
+          break
+        case "chime":
+          audio.src =
+            "https://assets.mixkit.co/active_storage/sfx/1058/1058-preview.mp3"
+          break
+        default:
+          audio.src =
+            "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"
+      }
+      audio.volume = volume
+      audio.play().catch((e) => console.error("Error playing test sound:", e))
+    } catch (error) {
+      console.error("Error creating audio:", error)
+    }
+  }
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
       <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 m-4 max-w-sm w-full shadow-xl">
@@ -69,6 +107,34 @@ const SettingsModal = ({
             min="5"
             max="120"
           />
+        </div>
+
+        {/* Sound Type Selection - New Section */}
+        <div className="mb-6">
+          <label className="block mb-2 font-medium text-gray-300">
+            Sound Type
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+            {soundOptions.map((option) => (
+              <button
+                key={option.value}
+                onClick={() => setSoundType(option.value)}
+                className={`px-3 py-2 rounded-md transition-colors ${
+                  soundType === option.value
+                    ? "bg-purple-600 text-white"
+                    : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={testSound}
+            className="mt-3 px-3 py-1.5 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 text-sm transition-colors w-full border border-gray-600"
+          >
+            Test Sound
+          </button>
         </div>
 
         <div className="mb-6">

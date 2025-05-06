@@ -9,7 +9,6 @@ import SettingsModal from "../SettingsModal/SettingsModal"
 import WorkoutCompleteScreen from "../WorkoutCompleteScreen/WorkoutCompleteScreen"
 
 export default function WorkoutRoutine() {
-  // State management
   const [difficulty, setDifficulty] = useState("beginner")
   const [selectedExercise, setSelectedExercise] = useState(null)
   const [repIndex, setRepIndex] = useState(0)
@@ -27,7 +26,6 @@ export default function WorkoutRoutine() {
   const [soundType, setSoundType] = useState("beep")
   const [countdownEnabled, setCountdownEnabled] = useState(true)
   const [workoutHistory, setWorkoutHistory] = useState(() => {
-    // Initialize with some example history or try to load from localStorage
     const savedHistory =
       typeof window !== "undefined"
         ? localStorage.getItem("workoutHistory")
@@ -58,22 +56,84 @@ export default function WorkoutRoutine() {
   const [workoutStartTime, setWorkoutStartTime] = useState(null)
   const [completedSets, setCompletedSets] = useState(0)
 
-  // References
-  const audioRef = useRef(null)
   const beepSoundRef = useRef(null)
   const countdownSoundRef = useRef(null)
+  const completeSoundRef = useRef(null)
 
-  // Effects
   useEffect(() => {
-    // Timer for exercises
+    if (typeof window !== "undefined") {
+      if (!beepSoundRef.current) {
+        beepSoundRef.current = new Audio()
+        beepSoundRef.current.volume = volume
+      }
+
+      if (!countdownSoundRef.current) {
+        countdownSoundRef.current = new Audio()
+        countdownSoundRef.current.src =
+          "https://assets.mixkit.co/active_storage/sfx/1056/1056-preview.mp3"
+        countdownSoundRef.current.volume = volume
+      }
+
+      if (!completeSoundRef.current) {
+        completeSoundRef.current = new Audio()
+        completeSoundRef.current.src =
+          "https://assets.mixkit.co/active_storage/sfx/2153/2153-preview.mp3"
+        completeSoundRef.current.volume = volume
+      }
+
+      updateSoundSource()
+    }
+  }, [])
+
+  const updateSoundSource = () => {
+    if (beepSoundRef.current) {
+      switch (soundType) {
+        case "beep":
+          beepSoundRef.current.src =
+            "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"
+          break
+        case "bell":
+          beepSoundRef.current.src =
+            "https://assets.mixkit.co/active_storage/sfx/209/209-preview.mp3"
+          break
+        case "chime":
+          beepSoundRef.current.src =
+            "https://assets.mixkit.co/active_storage/sfx/1058/1058-preview.mp3"
+          break
+        default:
+          beepSoundRef.current.src =
+            "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"
+      }
+    }
+  }
+
+  useEffect(() => {
+    updateSoundSource()
+  }, [soundType])
+
+  useEffect(() => {
+    if (beepSoundRef.current) beepSoundRef.current.volume = volume
+    if (countdownSoundRef.current) countdownSoundRef.current.volume = volume
+    if (completeSoundRef.current) completeSoundRef.current.volume = volume
+  }, [volume])
+
+  useEffect(() => {
+    if (workoutComplete && completeSoundRef.current) {
+      completeSoundRef.current
+        .play()
+        .catch((e) => console.error("Error playing completion sound:", e))
+    }
+  }, [workoutComplete])
+
+  useEffect(() => {
     if (counting && timer > 0) {
       const interval = setInterval(() => {
         setTimer((prev) => {
-          // Play countdown sound for the last 3 seconds
           if (countdownEnabled && prev <= 3 && prev > 0) {
             if (countdownSoundRef.current) {
-              countdownSoundRef.current.volume = volume
-              countdownSoundRef.current.play()
+              countdownSoundRef.current.play().catch((e) => {
+                console.error("Error playing countdown sound:", e)
+              })
             }
           }
           return prev - 1
@@ -82,8 +142,9 @@ export default function WorkoutRoutine() {
       return () => clearInterval(interval)
     } else if (counting && timer === 0) {
       if (beepSoundRef.current) {
-        beepSoundRef.current.volume = volume
-        beepSoundRef.current.play()
+        beepSoundRef.current.play().catch((e) => {
+          console.error("Error playing beep sound:", e)
+        })
       }
 
       setCounting(false)
@@ -93,18 +154,17 @@ export default function WorkoutRoutine() {
         startRest()
       }
     }
-  }, [counting, timer, countdownEnabled, volume, repIndex, selectedExercise])
+  }, [counting, timer, countdownEnabled, repIndex, selectedExercise])
 
-  // Rest timer effect
   useEffect(() => {
     if (isResting && restTimer > 0) {
       const interval = setInterval(() => {
         setRestTimer((prev) => {
-          // Play countdown sound for the last 3 seconds
           if (countdownEnabled && prev <= 3 && prev > 0) {
             if (countdownSoundRef.current) {
-              countdownSoundRef.current.volume = volume
-              countdownSoundRef.current.play()
+              countdownSoundRef.current.play().catch((e) => {
+                console.error("Error playing countdown sound:", e)
+              })
             }
           }
           return prev - 1
@@ -113,8 +173,9 @@ export default function WorkoutRoutine() {
       return () => clearInterval(interval)
     } else if (isResting && restTimer === 0) {
       if (beepSoundRef.current) {
-        beepSoundRef.current.volume = volume
-        beepSoundRef.current.play()
+        beepSoundRef.current.play().catch((e) => {
+          console.error("Error playing beep sound:", e)
+        })
       }
 
       setIsResting(false)
@@ -122,16 +183,8 @@ export default function WorkoutRoutine() {
       setTimer(selectedExercise.reps[repIndex + 1])
       setCounting(true)
     }
-  }, [
-    isResting,
-    restTimer,
-    countdownEnabled,
-    volume,
-    repIndex,
-    selectedExercise
-  ])
+  }, [isResting, restTimer, countdownEnabled, repIndex, selectedExercise])
 
-  // Check if workout is complete
   useEffect(() => {
     if (
       completedExercises.length === workoutPlans[difficulty].length &&
@@ -139,13 +192,10 @@ export default function WorkoutRoutine() {
     ) {
       setWorkoutComplete(true)
 
-      // Calculate workout duration
       if (workoutStartTime) {
         const duration = Math.round(
           (Date.now() - workoutStartTime) / (1000 * 60)
-        ) // in minutes
-
-        // Add to workout history
+        )
         const newWorkout = {
           date: new Date().toISOString().split("T")[0],
           difficulty,
@@ -156,7 +206,6 @@ export default function WorkoutRoutine() {
         const updatedHistory = [...workoutHistory, newWorkout]
         setWorkoutHistory(updatedHistory)
 
-        // Save to localStorage if available
         if (typeof window !== "undefined") {
           localStorage.setItem("workoutHistory", JSON.stringify(updatedHistory))
         }
@@ -164,14 +213,12 @@ export default function WorkoutRoutine() {
     }
   }, [completedExercises, difficulty, workoutStartTime, workoutHistory])
 
-  // Functions
   const startExercise = (exercise) => {
     setSelectedExercise(exercise)
     setRepIndex(0)
     setTimer(exercise.reps[0])
     setCounting(true)
 
-    // If this is the first exercise, start tracking workout time
     if (completedExercises.length === 0 && !workoutStartTime) {
       setWorkoutStartTime(Date.now())
     }
@@ -217,35 +264,27 @@ export default function WorkoutRoutine() {
   }
 
   const applySettings = () => {
-    // Apply custom rest time to all exercises
     workoutPlans[difficulty].forEach((exercise) => {
       exercise.rest = customRestTime
     })
     setShowSettings(false)
   }
 
-  // Get categories for filter
   const categories = [
     "All",
     ...new Set(workoutPlans[difficulty].map((ex) => ex.category))
   ]
 
-  // Filter exercises based on category
   const filteredExercises =
     filterCategory === "All"
       ? workoutPlans[difficulty]
       : workoutPlans[difficulty].filter((ex) => ex.category === filterCategory)
 
-  // Calculate workout progress percentage
   const progressPercentage =
     (completedExercises.length / workoutPlans[difficulty].length) * 100
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100">
-      <audio ref={audioRef} />
-      <audio ref={beepSoundRef} />
-      <audio ref={countdownSoundRef} />
-
       <Header
         onHistoryClick={() => setShowHistory(true)}
         onSettingsClick={() => setShowSettings(!showSettings)}
@@ -259,6 +298,8 @@ export default function WorkoutRoutine() {
           setCustomRestTime={setCustomRestTime}
           volume={volume}
           setVolume={setVolume}
+          soundType={soundType}
+          setSoundType={setSoundType}
           countdownEnabled={countdownEnabled}
           setCountdownEnabled={setCountdownEnabled}
           onClose={() => setShowSettings(false)}
